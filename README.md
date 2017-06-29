@@ -90,7 +90,7 @@ Type: `Function`
 <div class=" case3 "></div>
 ```
 
-<br>
+
 # js lazy load
 
 `url`과 `callback`을 변수로 받아 `js`의 로딩 시점을 조절할 수 있다.
@@ -126,7 +126,7 @@ Type: `String`
 
 Type: `Function`
 
-<br>
+
 # js lazy load(Promise)
 
 `Promise` 사용해야하는 경우
@@ -153,7 +153,7 @@ Type: `Function`
 
 Type: `String`
 
-<br>
+
 # YouTube lazy load
 
 js url과 callback을 변수로 받아 js의 로딩 시점을 조절할 수 있다.

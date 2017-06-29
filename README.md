@@ -54,7 +54,7 @@ Type: `Function`
 
 ```html
 <!-- 입력 소스 -->
-<img data-original="http://.../original_image.png" src="http://.../error_image.png" alt="" />
+<img data-original="http://.../original_image.png" src="http://.../default_image.png" alt="" />
 
 <!-- lazy 실행 후 변환된 소스 -->
 <img src="http://.../original_image.png" alt="" />

@@ -90,6 +90,7 @@ Type: `Function`
 <div class=" case3 "></div>
 ```
 
+<br>
 
 # js lazy load
 
@@ -126,6 +127,7 @@ Type: `String`
 
 Type: `Function`
 
+<br>
 
 # js lazy load(Promise)
 
@@ -153,6 +155,7 @@ Type: `Function`
 
 Type: `String`
 
+<br>
 
 # YouTube lazy load
 

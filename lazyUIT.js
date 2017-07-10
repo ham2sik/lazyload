@@ -244,6 +244,7 @@
 		if (!window.Promise) {
 			//console.log('Promise Polyfill use');
 			lazyUIT.js("promise-polyfill.js");
+			// ex - https://github.com/taylorhakes/promise-polyfill
 		}
 	}
 	lazyUIT.init();

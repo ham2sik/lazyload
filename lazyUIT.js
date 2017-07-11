@@ -6,19 +6,8 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory;
 	} else {
-		var extend = function() {
-			var extended = {};
-			for(key in arguments) {
-				var argument = arguments[key];
-				for (prop in argument) {
-					if (Object.prototype.hasOwnProperty.call(argument, prop)) {
-						extended[prop] = argument[prop];
-					}
-				}
-			}
-			return extended;
-		};
-		root.lazyUIT = root.lazyUIT || {}, root.lazyUIT=extend(root.lazyUIT, factory(root));
+		root.lazyUIT = root.lazyUIT || {};
+		root.lazyUIT = factory(root);
 	}
 })(this, function (root) {
 
@@ -221,6 +210,7 @@
 	}
 
 	lazyUIT.init = function() {
+		// querySelectorAll Polyfill
 		if (!document.querySelectorAll) {
 			//console.log('querySelectorAll Polyfill use');
 			document.querySelectorAll = function (selectors) {
@@ -241,6 +231,7 @@
 				return elements;
 			};
 		}
+		// Promise Polyfill
 		if (!window.Promise) {
 			//console.log('Promise Polyfill use');
 			lazyUIT.js("promise-polyfill.js");

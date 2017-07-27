@@ -1,4 +1,4 @@
-(function (root, factory) {
+(function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		define(function() {
 			return factory(root);
@@ -9,24 +9,37 @@
 		root.lazyUIT = root.lazyUIT || {};
 		root.lazyUIT = factory(root);
 	}
-})(this, function (root) {
+})(this, function(root) {
 
 	'use strict';
 
 	var lazyUIT = {};
 
-	var callback = function () {};
+	var callback = function() {};
 
-	var errorSrc = 'http://.../error_image.png';// errorSrc Default
+	var errorSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';// errorSrc Default
+
+	var exclusion = 'lazy-exclusion'; // exclusion class name Default
 
 	var offset, poll, delay, useDebounce, unload;
 
-	var isHidden = function (element) {
+	var isHidden = function(element) {
 		return (element.offsetParent === null);
 	};
 
-	var inView = function (element, view) {
+	var hasSomeParentTheClass = function(element, classname) {
+		if (element.className && (element.className.split(' ').indexOf(classname)>=0)) {
+			return true;
+		}
+		return element.parentNode && hasSomeParentTheClass(element.parentNode, classname);
+	};
+
+	var inView = function(element, view) {
 		if (isHidden(element)) {
+			return false;
+		}
+
+		if (hasSomeParentTheClass(element, exclusion)) {
 			return false;
 		}
 
@@ -34,34 +47,33 @@
 		return (box.right >= view.l && box.bottom >= view.t && box.left <= view.r && box.top <= view.b);
 	};
 
-	var debounceOrThrottle = function () {
+	var debounceOrThrottle = function() {
 		if(!useDebounce && !!poll) {
 			return;
 		}
 		clearTimeout(poll);
-		poll = setTimeout(function(){
+		poll = setTimeout(function() {
 			lazyUIT.render();
 			poll = null;
 		}, delay);
 	};
 
-	var imgError = function (elem) {
-		elem.onerror= function() {
-			var src = elem.getAttribute('src');
+	var imgError = function(elem) {
+		elem.onerror = function() {
+			// var src = elem.getAttribute('src');
 			elem.src = errorSrc;
-		}
+		};
 	};
 
-	var imgRender = function (elem) {
+	var imgRender = function(elem) {
 		var src;
 		if (elem.getAttribute('data-bg-original') !== null) {
 			elem.style.backgroundImage = 'url(' + elem.getAttribute('data-bg-original') + ')';
-		}
-		else if (elem.src !== (src = elem.getAttribute('data-original'))) {
+		} else if (elem.src !== (src = elem.getAttribute('data-original'))) {
 			elem.src = src;
 		}
 
-		var classNames=(" " + elem.className + " ").replace(/[\n\t]/g, " ");
+		var classNames = (" " + elem.className + " ").replace(/[\n\t]/g, " ");
 		if ( classNames.indexOf(" lazyBg ") > -1 ) {
 			elem.className = classNames.replace(" lazyBg ", " ");
 		}
@@ -74,12 +86,12 @@
 		imgError(elem);
 	};
 
-	lazyUIT.image = function (opts) {
+	lazyUIT.image = function(opts) {
 		opts = opts || {};
 		var offsetAll = opts.offset || 0;// offset Default: 0
 		var offsetVertical = opts.offsetVertical || offsetAll;
 		var offsetHorizontal = opts.offsetHorizontal || offsetAll;
-		var optionToInt = function (opt, fallback) {
+		var optionToInt = function(opt, fallback) {
 			return parseInt(opt || fallback, 10);
 		};
 		offset = {
@@ -93,8 +105,9 @@
 		unload = !!opts.unload;
 		callback = opts.callback || callback;
 		errorSrc = opts.errorSrc || errorSrc;
+		exclusion = opts.exclusion || exclusion;
 		lazyUIT.render();
-		if (document.addEventListener) {
+		if (root.addEventListener) {
 			root.addEventListener('scroll', debounceOrThrottle, false);
 			root.addEventListener('load', debounceOrThrottle, false);
 		} else {
@@ -103,7 +116,7 @@
 		}
 	};
 
-	lazyUIT.render = function (context) {
+	lazyUIT.render = function(context) {
 		var nodes = (context || document).querySelectorAll('[data-original], [data-bg-original], .lazyBg');
 		var length = nodes.length;
 		var elem;
@@ -113,19 +126,30 @@
 			b: (root.innerHeight || document.documentElement.clientHeight) + offset.b,
 			r: (root.innerWidth || document.documentElement.clientWidth) + offset.r
 		};
-		for (var i = 0; i < length; i++) {
+		var i;
+		for (i = 0; i < length; i++) {
 			elem = nodes[i];
-			if (inView(elem, view)) {
+			if (context == null) {
+				if (inView(elem, view)) {
+					imgRender(elem);
+				}
+			} else {
 				imgRender(elem);
 			}
+
 		}
 		if (!length) {
 			lazyUIT.detach();
 		}
 	};
 
-	lazyUIT.renderAll = function (context) {
-		var nodes = (context || document).querySelectorAll('[data-original], [data-bg-original], .lazyBg');
+	lazyUIT.renderAll = function(opts) {
+		opts = opts || {};
+		callback = opts.callback || callback;
+		errorSrc = opts.errorSrc || errorSrc;
+		exclusion = opts.exclusion || exclusion;
+
+		var nodes = document.querySelectorAll('[data-original], [data-bg-original], .lazyBg');
 		var length = nodes.length;
 		var elem;
 		for (var i = 0; i < length; i++) {
@@ -135,7 +159,7 @@
 		lazyUIT.detach();
 	};
 
-	lazyUIT.detach = function () {
+	lazyUIT.detach = function() {
 		if (document.removeEventListener) {
 			root.removeEventListener('scroll', debounceOrThrottle);
 		} else {
@@ -148,31 +172,31 @@
 		if (url == null) {
 			return false;
 		}
-		callback = callback || function () {};
+		callback = callback || function() {};
 		var scriptEle = document.createElement('script');
 		scriptEle.type = 'text/javascript';
 		var loaded = false;
-		scriptEle.onreadystatechange = function () {
+		scriptEle.onreadystatechange = function() {
 			if (this.readyState == 'loaded' || this.readyState == 'complete') {
 				if (loaded) return;
 				loaded = true;
 				callback();
 			}
-		}
-		scriptEle.onload = function () {
+		};
+		scriptEle.onload = function() {
 			callback();
 		};
 		scriptEle.src = url;
 		document.getElementsByTagName('head')[0].appendChild(scriptEle);
-	}
+	};
 
 	lazyUIT.jsPromise = function(url) {
-		return new Promise(function (resolve, reject) {
+		return new Promise(function(resolve, reject) {
 			lazyUIT.js(url, function() {
 				resolve(url+" loaded");
 			});
 		});
-	}
+	};
 
 	lazyUIT.youTube = function(ele) {
 		ele = ele || '.lazyYoutube';
@@ -186,7 +210,7 @@
 			options = JSON.parse(elem.getAttribute('data-options')) || {};
 
 			var srcValue=elem.getAttribute('data-src');
-			if (!(srcValue==null)&&!(srcValue=="")) {
+			if ((srcValue != null)&&(srcValue != "")) {
 				title=elem.getAttribute('data-title') || '';
 				youTubeIfr.setAttribute('src', elem.getAttribute('data-src'));
 				youTubeIfr.setAttribute('title', title);
@@ -207,13 +231,13 @@
 			// 	console.log('error');
 			// }
 		}
-	}
+	};
 
 	lazyUIT.init = function() {
 		// querySelectorAll Polyfill
 		if (!document.querySelectorAll) {
-			//console.log('querySelectorAll Polyfill use');
-			document.querySelectorAll = function (selectors) {
+			// console.log('querySelectorAll Polyfill use');
+			document.querySelectorAll = function(selectors) {
 				var style = document.createElement('style'), elements = [], element;
 				document.documentElement.firstChild.appendChild(style);
 				document._qsa = [];
@@ -233,11 +257,11 @@
 		}
 		// Promise Polyfill
 		if (!window.Promise) {
-			//console.log('Promise Polyfill use');
-			lazyUIT.js("promise-polyfill.js");
+			// console.log('Promise Polyfill use');
+			lazyUIT.js("https://raw.githubusercontent.com/taylorhakes/promise-polyfill/master/promise.min.js");
 			//polyfill url - https://github.com/taylorhakes/promise-polyfill
 		}
-	}
+	};
 	lazyUIT.init();
 
 	return lazyUIT;

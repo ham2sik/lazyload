@@ -1,3 +1,7 @@
+# 업데이트
+
+2017.07.28 exclusion 조건 추가
+
 # image lazy load
 
 `lazyUIT.js`를 호출하고, 상황에 따라 스크롤에 따라 이미지를 지연하는 방식(case 1)과 이미지를 한번에 다 불러오는 방식(case 2)를 사용할 수 있다.
@@ -38,6 +42,12 @@ Type: `Number`, Default: 0
 Type: `String`, Default: `'http://.../error_image.png'`
 
 이미지 로드에 실패하였을 경우 불러올 에러 이미지 경로
+
+#### exclusion
+
+Type: `String`, Default: `'lazy-exclusion'`
+
+lazy load 제외할 dom의 class name. (ex swipe area)
 
 #### callback
 
@@ -205,9 +215,3 @@ youtube 동영상 iframe title
 Type: `Object`
 
 youtube 동영상 옵션값(`width`, `height`, `allowfullscreen` 등)
-
-
-
-
-
-
